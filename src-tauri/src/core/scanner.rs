@@ -48,26 +48,23 @@ pub fn scan_directories(config: &ScanConfig) -> Vec<ScanResult> {
             });
         });
 
-    for entry in walker {
-        if let Ok(entry) = entry {
-            if !entry.file_type().is_dir() {
-                continue;
-            }
+    for entry in walker.into_iter().flatten() {
+        if !entry.file_type().is_dir() {
+            continue;
+        }
 
-            let file_name = entry.file_name.to_string_lossy().to_string();
+        let file_name = entry.file_name.to_string_lossy().to_string();
 
-            if targets_for_loop.contains(&file_name) {
-                let path = entry.path();
-                let size_bytes = calculate_dir_size(&path);
+        if targets_for_loop.contains(&file_name) {
+            let path = entry.path();
+            let size_bytes = calculate_dir_size(&path);
 
-                results.push(ScanResult {
-                    path: path.to_string_lossy().to_string(),
-                    size_bytes,
-                });
-            }
+            results.push(ScanResult {
+                path: path.to_string_lossy().to_string(),
+                size_bytes,
+            });
         }
     }
-
     results
 }
 
@@ -78,12 +75,10 @@ fn calculate_dir_size(path: &PathBuf) -> u64 {
     let mut size = 0;
 
     // We use jwalk here too because node_modules can have tens of thousands of tiny files
-    for entry in WalkDir::new(path).skip_hidden(false) {
-        if let Ok(entry) = entry {
-            if entry.file_type().is_file() {
-                if let Ok(metadata) = entry.metadata() {
-                    size += metadata.len();
-                }
+    for entry in WalkDir::new(path).skip_hidden(false).into_iter().flatten() {
+        if entry.file_type().is_file() {
+            if let Ok(metadata) = entry.metadata() {
+                size += metadata.len();
             }
         }
     }
@@ -92,6 +87,7 @@ fn calculate_dir_size(path: &PathBuf) -> u64 {
 }
 
 /// Moves a given path safely to the OS Trash.
+#[allow(dead_code)]
 pub fn move_to_trash(path: &str) -> Result<(), String> {
     let target = Path::new(path);
     if !target.exists() {
