@@ -45,3 +45,13 @@ cargo test --manifest-path=src-tauri/Cargo.toml
 **Always use shadcn/ui or Tremor components.** Never use raw HTML form elements (`<input>`, `<select>`, `<button>`) for user-facing UI. 
 - The UI must look native to macOS. Design in dark/graphite mode primarily.
 - Keep the popover UI extremely minimal: List of offenders, sizes, and a single action button per row.
+
+---
+
+## 4. Architecture Decision Records (ADRs)
+
+When making a significant architectural, structural, or dependency decision, you must document it via an ADR.
+1. Read `docs/adr/TEMPLATE.md` to understand the required format.
+2. Identify the next available sequential number (e.g., `0002`) by checking existing files in `docs/adr/`.
+3. Create a new file like `docs/adr/0002-short-kebab-case-title.md` and fill it out completely.
+4. Append a row to the table in `docs/adr/README.md`.
