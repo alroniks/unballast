@@ -23,4 +23,31 @@ dist-ssr
 *.sln
 *.sw?
 
-nodemode.txt
+unballast.txt
+
+# Playwright
+/test-results/
+/playwright-report/
+
+# Coverage reports
+/coverage/
+
+# Claude Code task signals
+.claude-done
+.claude-blocked
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Runtime / process files
+.claude-pid
+
+# Tauri signing keys (never commit private keys)
+*.key
+*.key.pub
+
+# Local environment variables (never commit)
+.env
+.env.local
+.env.*.local

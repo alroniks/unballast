@@ -1,4 +1,4 @@
-# Nodemode: Implementation Plan
+# Unballast: Implementation Plan
 
 Following the BMAD Phase 4 (Implementation) mapped to our Tolaria-style repository, here is the execution plan broken down by Epics.
 

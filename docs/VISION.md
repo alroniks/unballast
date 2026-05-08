@@ -1,4 +1,4 @@
-# Nodemode: Vision & Strategy
+# Unballast: Vision & Strategy
 
 ## The Problem
 Developers accumulate massive, forgotten `node_modules` folders across their projects, unnecessarily consuming disk space. 

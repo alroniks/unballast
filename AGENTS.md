@@ -2,6 +2,8 @@
 
 > Quick links: [Architecture](docs/ARCHITECTURE.md) · [Implementation Plan](docs/PLAN.md)
 
+**Important Rule:** The application name is strictly **Unballast**. Never refer to it as "Nodemode" or any other legacy codename.
+
 ---
 
 ## 1. Task Workflow
