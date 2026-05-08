@@ -75,45 +75,6 @@ jobs:
           verbose: true
         # OIDC avoids long-lived CODECOV_TOKEN secrets.
 
-      # ── 3. Code Health (CodeScene — Hotspot + Average Code Health gates) ──
-      # Enforces minimum floors on BOTH hotspot and average code health.
-      # Thresholds come from .codescene-thresholds so CI and local hooks match.
-      - name: Code Health gates
-        continue-on-error: true
-        env:
-          CODESCENE_PAT: ${{ secrets.CODESCENE_PAT }}
-          CODESCENE_PROJECT_ID: ${{ secrets.CODESCENE_PROJECT_ID }}
-        run: |
-          HOTSPOT_THRESHOLD=$(grep '^HOTSPOT_THRESHOLD=' .codescene-thresholds | cut -d= -f2)
-          AVERAGE_THRESHOLD=$(grep '^AVERAGE_THRESHOLD=' .codescene-thresholds | cut -d= -f2)
-          API_RESPONSE=$(curl -sf \
-            -H "Authorization: Bearer $CODESCENE_PAT" \
-            -H "Accept: application/json" \
-            "https://api.codescene.io/v2/projects/$CODESCENE_PROJECT_ID")
-          HOTSPOT_SCORE=$(echo "$API_RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['analysis']['hotspot_code_health']['now'])")
-          AVERAGE_SCORE=$(echo "$API_RESPONSE" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['analysis']['code_health']['now'])")
-          echo "Hotspot Code Health: $HOTSPOT_SCORE (threshold: $HOTSPOT_THRESHOLD)"
-          echo "Average Code Health: $AVERAGE_SCORE (threshold: $AVERAGE_THRESHOLD)"
-          python3 -c "
-          hotspot = float('$HOTSPOT_SCORE')
-          average = float('$AVERAGE_SCORE')
-          ht = float('$HOTSPOT_THRESHOLD')
-          at = float('$AVERAGE_THRESHOLD')
-          failed = False
-          if hotspot < ht:
-              print(f'❌ Hotspot Code Health {hotspot:.2f} is below threshold {ht}')
-              failed = True
-          else:
-              print(f'✅ Hotspot Code Health {hotspot:.2f} ≥ {ht}')
-          if average < at:
-              print(f'❌ Average Code Health {average:.2f} is below threshold {at}')
-              failed = True
-          else:
-              print(f'✅ Average Code Health {average:.2f} ≥ {at}')
-          if failed:
-              exit(1)
-          "
-
       # ── 4. Documentation check (warning only — does not fail build) ───────
       - name: Check docs are updated
         continue-on-error: true
