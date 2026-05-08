@@ -1,0 +1,16 @@
+{
+  "app.name": "Unballast",
+  "app.description": "Free up your disk from heavy node_modules",
+  "action.scan": "Scan Directory",
+  "action.clean": "Clean Selected",
+  "action.cancel": "Cancel",
+  "status.scanning": "Scanning {path}...",
+  "status.ready": "Ready to scan",
+  "status.found": "Found {count} folders taking {size}",
+  "locale.en": "English",
+  "locale.beBY": "Беларуская",
+  "locale.ruRU": "Русский",
+  "locale.ukUA": "Українська",
+  "locale.plPL": "Polski",
+  "locale.deDE": "Deutsch"
+}

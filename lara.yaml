@@ -1,0 +1,24 @@
+version: "1.0.0"
+
+project:
+  instruction: >
+    Unballast is a desktop utility app that scans for and deletes unused node_modules folders.
+    Keep product names (Unballast, Nodemode), CLI names, and placeholders like
+    {folder}, {size}, {count}, and {path} unchanged.
+
+locales:
+  source: en
+  target:
+    - be-BY
+    - ru-RU
+    - uk-UA
+    - pl-PL
+    - de-DE
+
+files:
+  json:
+    include:
+      - "src/i18n/locales/[locale].json"
+    exclude: []
+    lockedKeys: []
+    ignoredKeys: []
