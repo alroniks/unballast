@@ -71,7 +71,6 @@ const LOCALE_DEFINITIONS: Record<AppLocale, LocaleDefinition> = {
   },
 };
 
-const APP_LOCALE_SET = new Set<AppLocale>(APP_LOCALES);
 const NORMALIZED_LOCALE_LOOKUP = new Map<string, AppLocale>();
 for (const locale of APP_LOCALES) {
   const definition = LOCALE_DEFINITIONS[locale];
@@ -102,7 +101,7 @@ function buildTranslations() {
   };
 
   for (const [path, catalog] of Object.entries(LOCALE_MODULES)) {
-    const match = path.match(/\/([^\/]+)\.json$/);
+    const match = path.match(/\/([^/]+)\.json$/);
     if (!match) continue;
 
     const locale = normalizeLocaleCode(match[1]);
@@ -139,7 +138,7 @@ export function createTranslator(locale: AppLocale = DEFAULT_APP_LOCALE) {
 }
 
 function normalizeLocaleCode(value: string): AppLocale | null {
-  const normalized = value.trim().replaceAll("_", "-").toLowerCase();
+  const normalized = value.trim().replace(/_/g, "-").toLowerCase();
   if (!normalized) return null;
 
   const exactMatch = NORMALIZED_LOCALE_LOOKUP.get(normalized);
