@@ -13,10 +13,17 @@
     "windows": [
       {
         "title": "Unballast",
-        "width": 800,
-        "height": 600
+        "width": 450,
+        "height": 550,
+        "resizable": false,
+        "fullscreen": false,
+        "decorations": false,
+        "transparent": true,
+        "visible": false,
+        "alwaysOnTop": true
       }
     ],
+    "macOSPrivateApi": true,
     "security": {
       "csp": null
     }

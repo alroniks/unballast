@@ -42,3 +42,12 @@ Following the BMAD Phase 4 (Implementation) mapped to our Tolaria-style reposito
 - [ ] **Task 5.1:** Setup Playwright for Tauri.
 - [ ] **Task 5.2:** Write Smoke Tests (App opens, Tray is responsive).
 - [ ] **Task 5.3:** Write Integration Tests (Mocking file system, verifying UI updates when folders are deleted).
+
+## Epic 6: AI Tooling & Things 3 Integration
+**Goal:** Replace legacy Claude/Todoist workflows with native Gemini CLI skills that integrate directly with macOS Things 3.
+
+- [ ] **Task 6.1:** Analyze the existing `.claude/commands/` (e.g., `laputa-next-task`, `laputa-done`) and map their workflows to Gemini CLI skill structures.
+- [ ] **Task 6.2:** Develop an AppleScript/JXA script to fetch the current active task and complete tasks from Things 3 locally.
+- [ ] **Task 6.3:** Use the `skill-creator` to generate new native Gemini CLI skills for task fetching and task completion.
+- [ ] **Task 6.4:** Document the new skills and their triggers in `AGENTS.md`.
+- [ ] **Task 6.5:** Safely remove the legacy `.claude` configuration folder once the skills are tested.

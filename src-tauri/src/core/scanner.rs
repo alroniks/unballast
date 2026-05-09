@@ -1,6 +1,7 @@
 use crate::core::models::{ScanConfig, ScanResult};
 use jwalk::WalkDir;
-use std::path::{Path, PathBuf};
+use std::fs;
+use std::path::Path;
 
 /// Recursively scans for target directories (like node_modules) based on the config.
 /// It uses jwalk for multi-threaded performance and short-circuits traversal
@@ -13,7 +14,8 @@ pub fn scan_directories(config: &ScanConfig) -> Vec<ScanResult> {
         return results;
     }
 
-    // We must clone these for the parallel closure which requires 'static bounds
+    // We use Arc/cloning for the parallel closure bounds if needed,
+    // but since the walker owns the closure, we can just move cloned Vecs.
     let exclusions = config.exclusions.clone();
     let targets_for_closure = config.targets.clone();
     let targets_for_loop = config.targets.clone();
@@ -25,27 +27,24 @@ pub fn scan_directories(config: &ScanConfig) -> Vec<ScanResult> {
             // We use process_read_dir to decide which directories to descend into.
             // This is critical for performance: if we find a 'node_modules', we don't
             // need to scan *inside* of it for more 'node_modules'.
+            for dir_entry in dir_entry_results.iter_mut().flatten() {
+                if !dir_entry.file_type.is_dir() {
+                    continue; // Only care about directories
+                }
 
-            dir_entry_results.iter_mut().for_each(|dir_entry_result| {
-                if let Ok(dir_entry) = dir_entry_result {
-                    if !dir_entry.file_type.is_dir() {
-                        return; // Only care about directories
-                    }
-
-                    let file_name = dir_entry.file_name.to_string_lossy().to_string();
-
+                if let Some(file_name) = dir_entry.file_name.to_str() {
                     // Check if it's an excluded directory
-                    if exclusions.contains(&file_name) {
+                    if exclusions.iter().any(|e| e == file_name) {
                         dir_entry.read_children_path = None; // Stop descending
-                        return;
+                        continue;
                     }
 
                     // Check if it's a target directory (e.g., node_modules)
-                    if targets_for_closure.contains(&file_name) {
+                    if targets_for_closure.iter().any(|t| t == file_name) {
                         dir_entry.read_children_path = None; // Stop descending inside the target!
                     }
                 }
-            });
+            }
         });
 
     for entry in walker.into_iter().flatten() {
@@ -53,37 +52,33 @@ pub fn scan_directories(config: &ScanConfig) -> Vec<ScanResult> {
             continue;
         }
 
-        let file_name = entry.file_name.to_string_lossy().to_string();
+        if let Some(file_name) = entry.file_name().to_str() {
+            if targets_for_loop.iter().any(|t| t == file_name) {
+                let path = entry.path();
+                let size_bytes = calculate_dir_size(&path);
 
-        if targets_for_loop.contains(&file_name) {
-            let path = entry.path();
-            let size_bytes = calculate_dir_size(&path);
-
-            results.push(ScanResult {
-                path: path.to_string_lossy().to_string(),
-                size_bytes,
-            });
-        }
-    }
-    results
-}
-
-/// Calculates the total size of a directory in bytes.
-/// Note: We use standard std::fs here because we only run this ON target directories,
-/// but we could optimize this to run in parallel if needed later.
-fn calculate_dir_size(path: &PathBuf) -> u64 {
-    let mut size = 0;
-
-    // We use jwalk here too because node_modules can have tens of thousands of tiny files
-    for entry in WalkDir::new(path).skip_hidden(false).into_iter().flatten() {
-        if entry.file_type().is_file() {
-            if let Ok(metadata) = entry.metadata() {
-                size += metadata.len();
+                results.push(ScanResult {
+                    path: path.to_string_lossy().to_string(),
+                    size_bytes,
+                });
             }
         }
     }
 
-    size
+    results
+}
+
+/// Calculates the total size of a directory in bytes.
+/// We use jwalk here too because node_modules can have tens of thousands of tiny files.
+fn calculate_dir_size(path: &Path) -> u64 {
+    WalkDir::new(path)
+        .skip_hidden(false)
+        .into_iter()
+        .flatten()
+        .filter(|entry| entry.file_type().is_file())
+        .filter_map(|entry| entry.metadata().ok())
+        .map(|m| m.len())
+        .sum()
 }
 
 /// Moves a given path safely to the OS Trash.
@@ -95,6 +90,17 @@ pub fn move_to_trash(path: &str) -> Result<(), String> {
     }
 
     trash::delete(target).map_err(|e| format!("Failed to move to trash: {}", e))
+}
+
+/// Deletes a directory permanently (rm -rf). Used only if configured by the user.
+#[allow(dead_code)]
+pub fn delete_permanently(path: &str) -> Result<(), String> {
+    let target = Path::new(path);
+    if !target.exists() {
+        return Err(format!("Path does not exist: {}", path));
+    }
+
+    fs::remove_dir_all(target).map_err(|e| format!("Failed to delete permanently: {}", e))
 }
 
 #[cfg(test)]
