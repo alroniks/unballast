@@ -56,3 +56,22 @@ When making a significant architectural, structural, or dependency decision, you
 2. Identify the next available sequential number (e.g., `0002`) by checking existing files in `docs/adr/`.
 3. Create a new file like `docs/adr/0002-short-kebab-case-title.md` and fill it out completely.
 4. Append a row to the table in `docs/adr/README.md`.
+
+---
+
+## 5. UI Design Workflow (Pencil)
+
+All high-fidelity visual design for Unballast is managed via **Pencil** (`.pen` files). We iterate on UI structures and layouts in `design/unballast.pen` before implementing them in React/Tauri.
+
+### 5a. Core Pencil Workflow
+1. **Load Context:** Use `get_editor_state` to focus on `design/unballast.pen`. Ensure you review the top-level frames and the Reusable Components list.
+2. **Design Tokens:** Always read `get_variables()`. Use design tokens (e.g., `$--font-primary`, `$--color-bg`) for fills, text colors, and spacing instead of hardcoding hex values.
+3. **Composition:** Use `batch_design` for creating/updating UI. Follow the standard operations: `I` (Insert), `C` (Copy), `U` (Update), `R` (Replace), and `D` (Delete).
+4. **Validation:** Use `snapshot_layout` to verify element alignment/sizing without tokens, and `get_screenshot` strictly on specific component frames (not the whole document) to visually verify styling and typography.
+
+### 5b. Pencil Design Constraints
+- **Layouts:** Use Flexbox exclusively (`layout: "vertical" | "horizontal"`). Do not use absolute positioning (`x`/`y`) for child elements inside a flex parent.
+- **Sizing:** Rely on `fill_container` and `fit_content`. Hardcoded dimensions should be extremely rare (e.g., specific icon wrappers).
+- **Text Sizing:** Respect `textGrowth` properties. `auto` dictates size by content; `fixed-width` means the text box will wrap, requiring a `width` parameter.
+- **Component Overrides:** When inserting instances (`type: "ref"`), modify their children using the path syntax: `U(instanceId+"/childId", {content: "New Text"})`. Never alter the root component if the change only applies to one instance.
+- **Placeholders:** Set `placeholder: true` on parent frames while drafting child elements. Remove it once the composition is final.

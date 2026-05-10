@@ -1,0 +1,47 @@
+I am building a macOS system tray utility app called "Unballast" using Tauri, React, and Tailwind CSS. The app scans the user's file system for heavy, unused `node_modules` folders and allows developers to quickly clean them up to free disk space.
+
+Please generate the React UI for this frameless tray popover window based on the layout of the screenshot I uploaded, but strictly adapt it to the following technical and design constraints:
+
+### 🎨 Design System & Styling
+- **Frameworks:** React, Tailwind CSS, and `shadcn/ui` (or Tremor). Do not use raw HTML form elements; use accessible components.
+- **Icons:** Use `lucide-react`.
+- **Aesthetic:** macOS native, minimalist, and developer-focused.
+- **Color Palette:** Strictly Dark Mode / Graphite primarily (e.g., bg-zinc-900 / #18181b). Avoid bright backgrounds. Use subtle, low-contrast borders (e.g., border-zinc-800) and muted text for paths. 
+
+### 📐 Layout Constraints
+- The UI is a frameless popover anchored to the macOS menu bar. 
+- Dimensions: Fixed width (e.g., `w-[360px]` or `w-[400px]`), max-height of around `500px` with a scrollable content area.
+- Add subtle rounded corners and a soft shadow appropriate for a macOS popover (`rounded-xl shadow-2xl`).
+
+### 🧩 Views to Generate
+
+The component should have a simple state to toggle between two views: "Dashboard" and "Settings".
+
+#### 1. Main View (Dashboard)
+- **Header:** 
+  - App Name: "Unballast"
+  - Highlight Metric: "Total Space Freed" (e.g., "142 GB Lifetime") prominently displayed.
+  - Quick action icons: Settings gear icon.
+- **Content Area (Scrollable):**
+  - A minimalist list of "Offenders" (found `node_modules` folders).
+  - Each row must contain: 
+    - Folder Name (e.g., `my-awesome-app`)
+    - Truncated Path (e.g., `~/dev/web/my-awesome-app/node_modules`)
+    - Size (e.g., `1.2 GB`) 
+    - Action: A single, minimal "Clean" button (Trash icon).
+- **Footer:** 
+  - Summary metric: "Current active bloat: 14.5 GB"
+  - Action: "Rescan" button.
+
+#### 2. Settings View
+- **Header:** Title "Settings" and a "Back" button to return to the Dashboard.
+- **Content:**
+  - **Scan Root Path:** Input field (default: `~/`) to define where the scanner looks.
+  - **Deletion Strategy:** A Radio Group or Select dropdown with two options:
+    1. "Move to macOS Trash (Safe)"
+    2. "Permanent Deletion (rm -rf)"
+  - **Exclusions:** A simple list/input area to add folder paths that should be ignored by the scanner.
+- **Footer:** "Save Preferences" button.
+
+### 🖼️ Reference Image Instructions
+Use the uploaded screenshot strictly for the *structural layout* (e.g., spacing, list styles, header/footer proportions, sizing). However, completely override the colors, typography, and specific UI elements of the image to match the Graphite/Dark Mode aesthetic and the "Unballast" feature requirements described above. Ensure the final code is a single, copy-pasteable React component.
