@@ -19,13 +19,16 @@ Following the BMAD Phase 4 (Implementation) mapped to our Tolaria-style reposito
 - [ ] **Task 2.3:** Integrate `tauri-plugin-positioner` to properly toggle and position a frameless popover window relative to the tray icon.
 - [ ] **Task 2.4:** Wire Tray interactions (e.g., Left Click toggles popover, Right Click shows native menu with "Quit").
 
-## Epic 3: State Management & IPC Integration
-**Goal:** Persist user preferences and safely expose Rust commands to the frontend.
+## Epic 3: State Management, Licensing & IPC Integration
+**Goal:** Persist user preferences, securely manage Pro license states, and safely expose Rust commands to the frontend.
 
 - [ ] **Task 3.1:** Set up `tauri-plugin-store` to persist user-configured root paths (default `~/`) and exclusion rules.
 - [ ] **Task 3.2:** Persist the gamified "Total Space Freed" metric.
-- [ ] **Task 3.3:** Create and expose Tauri IPC commands (`scan_folders`, `trash_folder`, `get_stats`).
-- [ ] **Task 3.4:** Handle macOS permission gracefully (e.g., what happens if `~/Downloads` is protected without Full Disk Access).
+- [ ] **Task 3.3:** Implement secure macOS Keychain storage (`keyring` crate) for hardware UUID and license validation tokens.
+- [ ] **Task 3.4:** Implement Trial/Freemium logic: Track `cleans_performed` in the Keychain and gate the Bulk Clean IPC command if usage > 0 and unlicensed.
+- [ ] **Task 3.5:** Create License verification IPC endpoint (communicating with Lemon Squeezy/Gumroad API).
+- [ ] **Task 3.6:** Create and expose standard Tauri IPC commands (`scan_folders`, `trash_folder`, `get_stats`).
+- [ ] **Task 3.7:** Handle macOS permission gracefully (e.g., what happens if `~/Downloads` is protected without Full Disk Access).
 
 ## Epic 4: Frontend UI & Performance Tuning
 **Goal:** Deliver a fast, minimalist user interface to display metrics and trigger actions.

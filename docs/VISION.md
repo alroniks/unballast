@@ -1,28 +1,37 @@
 # Unballast: Vision & Strategy
 
+## Positioning
+**"A quiet developer workspace cleaner."**
+
 ## The Problem
-Developers accumulate massive, forgotten `node_modules` folders across their projects, unnecessarily consuming disk space. 
+Developers accumulate massive, forgotten `node_modules`, `target`, and `build` folders across their projects, unnecessarily consuming disk space.
 
 ## The Solution
-A lightweight, tray-based utility application built with Tauri that silently monitors for bloated dependencies and allows for quick, manual, or automated cleanup.
+A blazing-fast utility application built with Rust and Tauri that silently monitors for bloated developer dependencies and allows for quick, manual, or automated cleanup.
 
-**Monetization Strategy:** 100% Free and Open Source (Donationware). We will rely on voluntary support (e.g., GitHub Sponsors, Ko-fi) rather than paywalling developer utility features.
+### Business Model: Open Core (Free CLI / Paid UI)
+We are adopting a freemium / open-core model to drive organic adoption among developers while monetizing the convenience of the GUI:
+- **Free CLI (Open Source):** Distributed via Homebrew. The `unballast-core` engine is 100% free. This drives developer adoption, GitHub stars, and organic marketing.
+- **Paid UI ($9 Lifetime for 2 Macs):** A highly polished, native macOS tray application built with Tauri. Handled via a Merchant of Record (e.g., Lemon Squeezy or Gumroad).
+- **Freemium App Trial:** The UI app is free to download. It will scan and show the user how much space they can save for free. Users are granted **1 Free Clean** (or manual single-folder cleans) to prove value. Full bulk-cleaning and automation features require the $9 Pro license.
 
-## V1 Scope (Core Product)
-- **Target:** Exclusively `node_modules` for now. Other platforms (e.g., `vendor`, `target`) may be considered in the future based on user feedback.
-- **Smart Scanner:** Defaults to scanning the user's home directory (`~/`). Allows setting a custom root folder and excluding specific projects/directories to optimize performance.
-- **Deletion Strategy:** Configurable via user settings. The user can choose between moving folders to the OS Trash (safer) or direct permanent deletion (`rm -rf`).
-- **Metrics & UI:** The system tray icon/menu will show the current amount of space used by active `node_modules`. It will also track an all-time "Total Space Freed" metric. Configuration options will be available via a settings view.
+## Feature Split
 
-## Future Features (Automation & Insights)
-All future features will remain free, supported by the donationware model.
-- **Background Watcher:** Automatically discover new folders using a Rust watcher (`notify` crate).
-- **Automation:** Scheduled scans and auto-clean rules (e.g., remove folders older than 30 days).
-- **Smart Rules:** Delete dependencies only if the project hasn't been opened for N days; keep only the latest X folders per workspace.
-- **Notifications:** "You have 20GB in unused node_modules."
+### ✅ Free (Core Functions - CLI & Unlicensed UI)
+- **Deep Scan:** Blazing fast parallel scanning of workspaces.
+- **Metrics:** See exactly how much space is being wasted.
+- **Manual Clean:** Clean one folder at a time, or use the 1x Free Bulk Clean.
+- **Safe Deletion:** Defaults to moving folders to the macOS Bin (via `trash` crate).
+
+### 💎 Pro (Paid UI Features - $9)
+- **Unlimited Bulk Cleans:** Clean all 50+ projects with a single click.
+- **Automation & Background Watcher:** Scheduled scans (daily/weekly) and background discovery of new workspaces.
+- **Smart Rules:** Auto-clean projects that haven't been opened in N days, or keep only the X most recent dependency folders.
+- **Advanced Insights & History:** Track space saved over time, top space-eaters, and visual trend charts.
+- **Menu Bar Quick Actions:** Instantly free up space without opening the full UI.
 
 ## Technical Architecture
-- **Framework:** Tauri
-- **Backend (Rust):** File system scanning (`walkdir` / `ignore`), computing totals, moving to trash (`trash` crate), tray management.
-- **Frontend (Web):** Minimalist popover UI.
-- **Methodology:** BMAD Method (Analysis, Planning, Solutioning, Implementation) mapped into a streamlined `docs/` structure (Tolaria-style).
+- **Framework:** Tauri (React/Vite Frontend)
+- **Backend (Rust):** File system scanning (`jwalk` / `ignore`), computing totals, and moving to trash (`trash` crate).
+- **Security:** `keyring` crate for securely storing license keys and trial usage limits in the macOS Keychain.
+- **Methodology:** BMAD Method (Analysis, Planning, Solutioning, Implementation) mapped into a streamlined `docs/` structure.
